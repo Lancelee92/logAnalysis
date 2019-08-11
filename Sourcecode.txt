@@ -1,0 +1,11 @@
+Question 1
+select articles.title as title, count(articles.title) as views from articles inner join log on (log.path='/article/'||articles.slug) group by title order by views desc limit 3;
+
+Question 2
+select authors.name as name, count(authors.name) as views from authors right outer join (articles inner join log on (log.path='/article/'||articles.slug)) as ntable on (authors.id=ntable.author) group by name order by views desc;
+
+Question 3
+create view count_table as select date(time), count(status) filter (where status='404 NOT FOUND') as nfcount, count(time) as total_request from log group by date(time);
+
+select date, round( cast(float8 (nfcount*100::decimal)/total_request as numeric),2) as error_percentage from count_table where round( cast(float8 (nfcount*100::decimal)/total_request as numeric),2) > 1;
+
